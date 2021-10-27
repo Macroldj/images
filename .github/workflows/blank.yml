@@ -31,4 +31,4 @@ jobs:
         run: |
           docker pull nginx
           docker tag nginx:latest macroldj/nginx:234
-          docker macroldj/nginx:234
+          docker push macroldj/nginx:234
