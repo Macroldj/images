@@ -26,8 +26,8 @@ jobs:
       - name: Build image
         run: |
 
-          docker pull mcr.microsoft.com/powershell:nanoserver
-          docker tag mcr.microsoft.com/powershell:nanoserver macroldj/powershell
+          docker pull mcr.microsoft.com/powershell
+          docker tag mcr.microsoft.com/powershell macroldj/powershell
           docker macroldj/powershell
 
           docker pull gcr.io/tekton-releases/github.com/tektoncd/pipeline/cmd/webhook:v0.29.0@sha256:46d5b90a7f4e9996351ad893a26bcbd27216676ad4d5316088ce351fb2c2c3dd
