@@ -30,6 +30,6 @@ jobs:
           docker tag mcr.microsoft.com/powershell macroldj/powershell
           docker push macroldj/powershell
 
-          docker pull gcr.io/tekton-releases/github.com/tektoncd/pipeline/cmd/webhook:v0.29.0@sha256:46d5b90a7f4e9996351ad893a26bcbd27216676ad4d5316088ce351fb2c2c3dd
-          docker tag gcr.io/tekton-releases/github.com/tektoncd/pipeline/cmd/webhook:v0.29.0@sha256:46d5b90a7f4e9996351ad893a26bcbd27216676ad4d5316088ce351fb2c2c3dd macroldj/webhook:v0.29.0
-          docker push macroldj/webhook:v0.29.0
+          docker pull gcr.io/tekton-releases/github.com/tektoncd/dashboard/cmd/dashboard@sha256:95f71a2568ced67ec370b5360f88bec3280601908cac9e62dfbb801114480437
+          docker tag gcr.io/tekton-releases/github.com/tektoncd/dashboard/cmd/dashboard@sha256:95f71a2568ced67ec370b5360f88bec3280601908cac9e62dfbb801114480437 macroldj/tekton_dashboard:v0.1.0
+          docker push macroldj/tekton_dashboard:v0.1.0
