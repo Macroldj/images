@@ -1,0 +1,29 @@
+# 使用 Ubuntu 22.04 作为基础镜像
+FROM registry.cn-hangzhou.aliyuncs.com/macroldj/ubuntu:22.04-base
+
+# 更新包列表并安装必要的工具和常见调试工具
+RUN apt-get install -y --no-install-recommends \
+    apt-utils \
+    curl \
+    cmake \
+    build-essential \
+    gcc \
+    g++-multilib \
+    locales \
+    make \
+    ruby \
+    gcovr \
+    wget \
+    && rm -rf /var/lib/apt/lists/*
+
+# 设置工作目录
+WORKDIR /app
+
+# 示例：将当前目录下的 C 文件复制到容器的工作目录
+COPY . .
+
+# 示例：编译 C 文件，添加 -g 选项以包含调试信息
+RUN gcc -g -o main main.c
+
+# 运行编译后的可执行文件
+CMD ["./main"]

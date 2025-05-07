@@ -1,0 +1,13 @@
+FROM registry.cn-hangzhou.aliyuncs.com/macroldj/conda-miniconda3-centos7:latest
+
+# update repo source
+RUN sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-Base.repo && \
+    sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://mirrors.aliyun.com|g' /etc/yum.repos.d/CentOS-Base.repo && \
+    yum clean all && yum makecache fast && \
+    yum -y update
+
+# install target python version
+RUN conda install -c conda-forge python=3.11.9
+
+# install utils centos utils
+RUN yum install curl vim gcc gcc-c++ make -y && yum clean all

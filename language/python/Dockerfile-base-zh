@@ -1,0 +1,26 @@
+FROM 192.168.9.37/devops/python3.11.9-base:v1.0.1
+
+# install utils
+ADD wkhtmltox-0.12.6-1.centos7.x86_64.rpm /tmp/wkhtmltox-0.12.6-1.centos7.x86_64.rpm
+RUN yum install -y /tmp/wkhtmltox-0.12.6-1.centos7.x86_64.rpm && \
+    rm -rf /tmp/wkhtmltox-0.12.6-1.centos7.x86_64.rpm
+
+# setting chinese
+RUN yum install -y glibc-common kde-l10n-Chinese wqy-zenhei-fonts && \
+    localedef -c -f UTF-8 -i zh_CN zh_CN.UTF-8 && \
+    localedef -c -f GB18030 -i zh_CN zh_CN.GB18030 && \
+    localedef -c -f GB2312 -i zh_CN zh_CN.GB2312 && \
+    localedef -c -f GBK -i zh_CN zh_CN.GBK && \
+    echo 'LANG="zh_CN.GB18030"' > /etc/locale.conf && source /etc/locale.conf && \
+    echo "export LC_ALL=zh_CN.GB18030" >> /etc/profile && source /etc/profile
+
+ENV LANG=zh_CN.GB18030 \
+    LC_ALL=zh_CN.GB18030
+
+# set timezone
+RUN /bin/cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && echo 'Asia/Shanghai' >/etc/timezone
+
+ADD requirements-base.txt /tmp/requirements-base.txt
+
+RUN pip3 install -i https://mirrors.aliyun.com/pypi/simple/ --trusted-host mirrors.aliyun.com \
+    -r /tmp/requirements-base.txt
