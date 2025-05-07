@@ -1,0 +1,11 @@
+version: "3"
+services:
+  croner:
+    image: ghcr.io/andrewevans/croner:latest
+    container_name: croner
+    restart: always
+    environment:
+      - PluseDutyUrl=info
+      - PluseDutyToken=info
+    volumes:
+      - /path/to/config:/config

@@ -1,0 +1,10 @@
+FROM registry.cn-hangzhou.aliyuncs.com/macroldj/kali-rolling:20250607
+
+# 更新源
+RUN apt update && apt -y install kali-linux-large
+
+# 工作目录
+WORKDIR /root
+
+# 相关脚本
+COPY ./script /root/script

@@ -1,0 +1,13 @@
+FROM registry.cn-hangzhou.aliyuncs.com/macroldj/ubuntu:22.04-base
+
+
+# install go
+COPY go1.22.12.linux-amd64.tar.gz /usr/local/
+
+RUN tar -C /usr/local -xzf /usr/local/go1.22.12.linux-amd64.tar.gz && \
+    rm -rf /usr/local/go1.22.12.linux-amd64.tar.gz && \
+    ln -s /usr/local/go/bin/go /usr/bin/go && \
+    ln -s /usr/local/go/bin/gofmt /usr/bin/gofmt
+
+# goproxy setings
+RUN go env -w GO111MODULE=on && go env -w GOPROXY=https://goproxy.cn,directdate

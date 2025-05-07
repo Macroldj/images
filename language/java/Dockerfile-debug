@@ -1,0 +1,11 @@
+FROM registry.cn-hangzhou.aliyuncs.com/macroldj/ubuntu:22.04-base
+
+# install jdk17
+RUN apt-get update && \
+    apt-get install -y openjdk-17-jdk && \
+    rm -rf /var/lib/apt/lists/*
+
+# install maven
+RUN apt-get update && \
+    apt-get install -y maven && \
+    rm -rf /var/lib/apt/lists/*

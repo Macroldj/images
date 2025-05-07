@@ -1,0 +1,53 @@
+version: '3'
+
+services:
+  nginx-master:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nginx-master
+    environment:
+      - KEEPALIVED_ROLE=master
+      - INTERFACE=eth0
+      - VIRTUAL_IP1=192.168.1.200
+      - VIRTUAL_IP2=192.168.1.201
+    volumes:
+      - ./keepalived-master.conf:/etc/keepalived/keepalived-master.conf
+      - ./keepalived-backup.conf:/etc/keepalived/keepalived-backup.conf
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    cap_add:
+      - NET_ADMIN
+      - NET_BROADCAST
+      - NET_RAW
+    networks:
+      keepalived_net:
+        ipv4_address: 192.168.1.10
+
+  nginx-backup:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nginx-backup
+    environment:
+      - KEEPALIVED_ROLE=backup
+      - INTERFACE=eth0
+      - VIRTUAL_IP1=192.168.1.200
+      - VIRTUAL_IP2=192.168.1.201
+    volumes:
+      - ./keepalived-master.conf:/etc/keepalived/keepalived-master.conf
+      - ./keepalived-backup.conf:/etc/keepalived/keepalived-backup.conf
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    cap_add:
+      - NET_ADMIN
+      - NET_BROADCAST
+      - NET_RAW
+    networks:
+      keepalived_net:
+        ipv4_address: 192.168.1.11
+
+networks:
+  keepalived_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.1.0/24

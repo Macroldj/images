@@ -8,15 +8,15 @@
 ```bash
 # ubuntu 
 cd ubuntu
-docker build -f Dockerfile-20 -t registry.cn-hangzhou.aliyuncs.com/macroldj/ubuntu:20.04-base .
-docker build -f Dockerfile-22 -t registry.cn-hangzhou.aliyuncs.com/macroldj/ubuntu:22.04-base .
-docker build -f Dockerfile-24 -t registry.cn-hangzhou.aliyuncs.com/macroldj/ubuntu:24.04-base .
+docker build -f Dockerfile-build-20 -t registry.cn-hangzhou.aliyuncs.com/macroldj/ubuntu:20.04-base .
+docker build -f Dockerfile-build-22 -t registry.cn-hangzhou.aliyuncs.com/macroldj/ubuntu:22.04-base .
+docker build -f Dockerfile-build-24 -t registry.cn-hangzhou.aliyuncs.com/macroldj/ubuntu:24.04-base .
 
 # debian
 cd debian
-docker build -f Dockerfile-12 -t registry.cn-hangzhou.aliyuncs.com/macroldj/debian:12-base .
+docker build -f Dockerfile-build-12 -t registry.cn-hangzhou.aliyuncs.com/macroldj/debian:12-base .
 
 # centos7
 cd centos
-docker build -f Dockerfile-7 -t registry.cn-hangzhou.aliyuncs.com/macroldj/centos:7-base .
+docker build -f Dockerfile-build-7 -t registry.cn-hangzhou.aliyuncs.com/macroldj/centos:7-base .
 ```
