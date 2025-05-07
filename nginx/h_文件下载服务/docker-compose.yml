@@ -1,0 +1,11 @@
+version: "3"
+
+services:
+  download:
+    image: 100.64.10.37/devops/downloader:v1.0.1
+    restart: "always"
+    ports:
+      - "8084:80"
+    volumes:
+      - "/data/apps:/usr/share/nginx/html/data"
+      - "./log:/var/log/nginx/"

@@ -1,0 +1,29 @@
+version: '3.0'
+services:
+  apache:
+    image: httpd
+    expose:
+      - 80
+    volumes:
+      - ./web:/var/www/html
+
+  nginx0:
+    image: nginx
+    expose:
+      - 80
+
+  nginx1:
+    image: nginx
+    expose:
+      - 80
+
+  haproxy:
+    image: haproxy
+    volumes:
+      - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg # haproxy的配置文件路径
+    links:
+      - apache
+      - nginx0
+      - nginx1
+    ports:
+      - "80:80"

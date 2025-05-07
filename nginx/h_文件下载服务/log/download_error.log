@@ -1,0 +1,1 @@
+2021/12/01 06:31:26 [error] 9#9: *1 open() "/usr/share/nginx/html/data/favicon.ico" failed (2: No such file or directory), client: 192.168.174.1, server: , request: "GET /favicon.ico HTTP/1.1", host: "192.168.174.135:8084", referrer: "http://192.168.174.135:8084/"

@@ -1,0 +1,6 @@
+192.168.174.1 - - [01/Dec/2021:06:31:25 +0000] "GET / HTTP/1.1" 200 266 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36"
+192.168.174.1 - - [01/Dec/2021:06:31:26 +0000] "GET /favicon.ico HTTP/1.1" 404 571 "http://192.168.174.135:8084/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36"
+192.168.174.1 - - [01/Dec/2021:06:31:31 +0000] "GET /xiaoxiao.md HTTP/1.1" 200 17 "http://192.168.174.135:8084/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36"
+192.168.174.1 - - [01/Dec/2021:06:31:59 +0000] "GET / HTTP/1.1" 200 266 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36"
+192.168.174.1 - - [01/Dec/2021:06:33:07 +0000] "GET / HTTP/1.1" 200 369 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36"
+192.168.174.1 - - [01/Dec/2021:06:33:09 +0000] "GET /README.md HTTP/1.1" 200 34 "http://192.168.174.135:8084/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36"

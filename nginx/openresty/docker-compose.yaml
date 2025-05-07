@@ -1,0 +1,11 @@
+version: "3"
+services:
+  openresty:
+    image: openresty/openresty:latest
+    ports:
+      - "30800:80"
+    volumes:
+      - ./logs:/usr/local/openresty/nginx/logs
+      - ./html:/usr/local/openresty/nginx/html
+      - ./lua:/usr/local/openresty/nginx/lua
+      - ./nginx.conf:/usr/local/openresty/nginx/conf/nginx.conf
