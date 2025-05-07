@@ -1,0 +1,32 @@
+version: "3.3"
+services:
+  redis-6380:
+    image: 100.64.10.37/devops/redis:4.0.2
+    ports:
+      - "6380:6379"
+    restart: always
+    volumes:
+      - ./config/redis.conf:/usr/local/etc/redis/redis.conf
+      - ./data/redis/:/data
+    command: [ "redis-server", "/usr/local/etc/redis/redis.conf" ]
+
+  redis-6381:
+    image: 100.64.10.37/devops/redis:4.0.2
+    ports:
+      - "6381:6379"
+    restart: always
+    volumes:
+      - ./config/redis.conf:/usr/local/etc/redis/redis.conf
+      - ./data/redis/:/data
+    command: [ "redis-server", "/usr/local/etc/redis/redis.conf" ]
+
+
+  redis-6382:
+    image: 100.64.10.37/devops/redis:4.0.2
+    ports:
+      - "6382:6379"
+    restart: always
+    volumes:
+      - ./config/redis.conf:/usr/local/etc/redis/redis.conf
+      - ./data/redis/:/data
+    command: [ "redis-server", "/usr/local/etc/redis/redis.conf" ]

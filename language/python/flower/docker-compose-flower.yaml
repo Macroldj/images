@@ -1,0 +1,37 @@
+version: "3.3"
+services:
+  flower1:
+    image: macroldj/flower:v2
+    working_dir: /home/workspace
+    ports:
+      - "5556:5555"
+    command: [ "celery","--broker=redis://:redis1298@100.64.15.10:6380/1", "flower"]
+    healthcheck:
+      test: curl -u lidj:xiaoxiao --fail http://localhost:5555||exit 1
+      interval: 30s
+      timeout: 5s
+      retries: 6
+
+  flower2:
+    image: macroldj/flower:v2
+    working_dir: /home/workspace
+    ports:
+      - "5557:5555"
+    command: [ "celery","--broker=redis://:redis1298@100.64.15.10:6381/1", "flower"]
+    healthcheck:
+      test: curl -u lidj:xiaoxiao --fail http://localhost:5555||exit 1
+      interval: 30s
+      timeout: 5s
+      retries: 6
+
+  flower3:
+    image: macroldj/flower:v2
+    working_dir: /home/workspace
+    ports:
+      - "5558:5555"
+    command: [ "celery","--broker=redis://:redis1298@100.64.15.10:6382/1", "flower"]
+    healthcheck:
+      test: curl -u lidj:xiaoxiao --fail http://localhost:5555||exit 1
+      interval: 30s
+      timeout: 5s
+      retries: 6
