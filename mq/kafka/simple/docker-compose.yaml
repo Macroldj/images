@@ -1,0 +1,39 @@
+version: '3'
+
+services:
+  zookeeper:
+    image: registry.cn-hangzhou.aliyuncs.com/macroldj/zookeeper:3.8-22.04_edge
+    container_name: zookeeper
+    networks:
+      - kafka-network
+    restart: always
+
+  kafka:
+    image: registry.cn-hangzhou.aliyuncs.com/macroldj/kafka:3.6-22.04_edge
+    container_name: kafka
+    ports:
+      - "9092:9092"
+    networks:
+      - kafka-network
+    depends_on:
+      - zookeeper
+    restart: always
+
+  kafka-manager:
+    image: registry.cn-hangzhou.aliyuncs.com/macroldj/kafka-manager:3.0.0.5
+    container_name: kafka-manager
+    ports:
+      - "9000:9000"
+    environment:
+      ZK_HOSTS: zookeeper:2181
+      APPLICATION_SECRET: "random-secret"
+    networks:
+      - kafka-network
+    depends_on:
+      - zookeeper
+      - kafka
+    restart: always
+    
+networks:
+  kafka-network:
+    driver: bridge
