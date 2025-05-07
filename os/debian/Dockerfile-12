@@ -1,0 +1,36 @@
+FROM registry.cn-hangzhou.aliyuncs.com/macroldj/debian:12.10
+
+# debian:12.10
+
+# 更新debian源
+RUN sed -i 's/http:\/\/deb.debian.org/http:\/\/mirrors.aliyun.com/g' /etc/apt/sources.list.d/debian.sources && \
+    sed -i 's/http:\/\/security.debian.org/http:\/\/mirrors.aliyun.com/g' /etc/apt/sources.list.d/debian.sources && \
+    apt-get update && \
+    apt -y upgrade && \
+    apt -y install --no-install-recommends \
+    apt-utils \
+    apt-transport-https \
+    ca-certificates \
+    curl \
+    gnupg \
+    lsb-release \
+    locales \
+    net-tools \
+    procps \
+    sudo \
+    vim \
+    wget \
+    xz-utils \
+    zip \
+    zlib1g \
+    zlib1g-dev \
+    && \
+    rm -rf /var/lib/apt/lists/* && \
+    rm -rf /var/cache/apt/archives/*.deb && \
+    rm -rf /var/cache/apt/archives/partial/*.deb && \
+    rm -rf /var/cache/apt/*.bin
+
+# 时区
+RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \
+    echo 'Asia/Shanghai' > /etc/timezone
+

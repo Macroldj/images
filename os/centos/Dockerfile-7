@@ -1,0 +1,42 @@
+FROM registry.cn-hangzhou.aliyuncs.com/macroldj/centos:7
+
+# update centos source
+RUN sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-Base.repo && \
+    sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://mirrors.aliyun.com|g' /etc/yum.repos.d/CentOS-Base.repo && \
+    yum clean all && \
+    yum makecache fast && \
+    yum -y update
+
+# install utils \
+RUN yum -y install epel-release && \
+    yum -y install ca-certificates \
+    curl \
+    gcc \
+    gcc-c++ \
+    make \
+    autoconf \
+    automake \
+    bzip2 \
+    bzip2-devel \
+    cyrus-sasl-devel \
+    file \
+    flex \
+    gdbm-devel \
+    glibc-devel \
+    glibc-headers \
+    libcurl-devel \
+    libevent-devel \
+    libffi-devel \
+    libtool-ltdl-devel \
+    libtool-ltdl \
+    libxml2-devel \
+    libxslt-devel \
+    ncurses-devel \
+    openssl-devel \
+    readline-devel \
+    sqlite-devel \
+    tcl-devel
+
+# 时区
+RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \
+    echo 'Asia/Shanghai' > /etc/timezone
