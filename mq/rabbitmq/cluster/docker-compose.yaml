@@ -1,0 +1,115 @@
+version: '3'
+
+services:
+  rabbitmq1:
+    image: registry.cn-hangzhou.aliyuncs.com/macroldj/rabbitmq:3.13.7-management
+    hostname: rabbitmq1
+    container_name: rabbitmq1
+    ports:
+      - "5672:5672"   # AMQP 协议端口
+      - "15672:15672" # 管理界面端口
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=admin123
+      - RABBITMQ_ERLANG_COOKIE=SWQOKODSQALRPCLNMEQG
+    volumes:
+      - rabbitmq1-data:/var/lib/rabbitmq
+    restart: always
+    networks:
+      - rabbitmq-cluster
+
+  rabbitmq2:
+    image: registry.cn-hangzhou.aliyuncs.com/macroldj/rabbitmq:3.13.7-management
+    hostname: rabbitmq2
+    container_name: rabbitmq2
+    ports:
+      - "5673:5672"   # AMQP 协议端口
+      - "15673:15672" # 管理界面端口
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=admin123
+      - RABBITMQ_ERLANG_COOKIE=SWQOKODSQALRPCLNMEQG
+    volumes:
+      - rabbitmq2-data:/var/lib/rabbitmq
+    restart: always
+    networks:
+      - rabbitmq-cluster
+    depends_on:
+      - rabbitmq1
+    entrypoint: >
+      /bin/bash -c "
+        # Wait for rabbitmq1 to be fully started
+        sleep 30 &&
+        # Start RabbitMQ server in the background
+        rabbitmq-server -detached &&
+        # Wait for the server to start
+        sleep 15 &&
+        # Stop the app, reset, join the cluster, and start again
+        rabbitmqctl stop_app &&
+        rabbitmqctl reset &&
+        rabbitmqctl join_cluster rabbit@rabbitmq1 &&
+        rabbitmqctl start_app &&
+        # Keep the container running
+        tail -f /dev/null
+      "
+
+  rabbitmq3:
+    image: registry.cn-hangzhou.aliyuncs.com/macroldj/rabbitmq:3.13.7-management
+    hostname: rabbitmq3
+    container_name: rabbitmq3
+    ports:
+      - "5674:5672"   # AMQP 协议端口
+      - "15674:15672" # 管理界面端口
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=admin123
+      - RABBITMQ_ERLANG_COOKIE=SWQOKODSQALRPCLNMEQG
+    volumes:
+      - rabbitmq3-data:/var/lib/rabbitmq
+    restart: always
+    networks:
+      - rabbitmq-cluster
+    depends_on:
+      - rabbitmq1
+    entrypoint: >
+      /bin/bash -c "
+        # Wait for rabbitmq1 to be fully started
+        sleep 45 &&
+        # Start RabbitMQ server in the background
+        rabbitmq-server -detached &&
+        # Wait for the server to start
+        sleep 15 &&
+        # Stop the app, reset, join the cluster, and start again
+        rabbitmqctl stop_app &&
+        rabbitmqctl reset &&
+        rabbitmqctl join_cluster rabbit@rabbitmq1 &&
+        rabbitmqctl start_app &&
+        # Keep the container running
+        tail -f /dev/null
+      "
+
+  haproxy:
+    image: registry.cn-hangzhou.aliyuncs.com/macroldj/haproxy:3.1.7
+    container_name: rabbitmq-haproxy
+    ports:
+      - "5670:5670"   # 负载均衡的 AMQP 端口
+      - "15670:15670" # 负载均衡的管理界面端口
+      - "1936:1936"   # HAProxy 统计页面
+    volumes:
+      - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    depends_on:
+      - rabbitmq1
+      - rabbitmq2
+      - rabbitmq3
+    networks:
+      - rabbitmq-cluster
+    restart: always
+
+networks:
+  rabbitmq-cluster:
+    driver: bridge
+
+volumes:
+  rabbitmq1-data:
+  rabbitmq2-data:
+  rabbitmq3-data:

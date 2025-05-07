@@ -1,0 +1,19 @@
+version: '3'
+
+services:
+  rabbitmq:
+    image: registry.cn-hangzhou.aliyuncs.com/macroldj/rabbitmq:3.13.7-management
+    container_name: rabbitmq
+    hostname: rabbitmq
+    ports:
+      - "5672:5672"   # AMQP 协议端口
+      - "15672:15672" # 管理界面端口
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=admin123
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    restart: always
+
+volumes:
+  rabbitmq-data:
