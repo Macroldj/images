@@ -1,0 +1,140 @@
+version: '3.8'
+
+services:
+  zookeeper1:
+    image: registry.cn-hangzhou.aliyuncs.com/macroldj/zookeeper:3.7
+    container_name: zookeeper1
+    hostname: zookeeper1
+    ports:
+      - "2181:2181"
+    environment:
+      ZOO_MY_ID: 1
+      ZOO_SERVERS: server.1=zookeeper1:2888:3888;2181 server.2=zookeeper2:2888:3888;2181 server.3=zookeeper3:2888:3888;2181
+    volumes:
+      - zookeeper1-data:/data
+      - zookeeper1-datalog:/datalog
+    networks:
+      - clickhouse-network
+    restart: always
+
+  zookeeper2:
+    image: registry.cn-hangzhou.aliyuncs.com/macroldj/zookeeper:3.7
+    container_name: zookeeper2
+    hostname: zookeeper2
+    ports:
+      - "2182:2181"
+    environment:
+      ZOO_MY_ID: 2
+      ZOO_SERVERS: server.1=zookeeper1:2888:3888;2181 server.2=zookeeper2:2888:3888;2181 server.3=zookeeper3:2888:3888;2181
+    volumes:
+      - zookeeper2-data:/data
+      - zookeeper2-datalog:/datalog
+    networks:
+      - clickhouse-network
+    restart: always
+
+  zookeeper3:
+    image: registry.cn-hangzhou.aliyuncs.com/macroldj/zookeeper:3.7
+    container_name: zookeeper3
+    hostname: zookeeper3
+    ports:
+      - "2183:2181"
+    environment:
+      ZOO_MY_ID: 3
+      ZOO_SERVERS: server.1=zookeeper1:2888:3888;2181 server.2=zookeeper2:2888:3888;2181 server.3=zookeeper3:2888:3888;2181
+    volumes:
+      - zookeeper3-data:/data
+      - zookeeper3-datalog:/datalog
+    networks:
+      - clickhouse-network
+    restart: always
+
+  clickhouse1:
+    image: registry.cn-hangzhou.aliyuncs.com/macroldj/clickhouse-server:25.4
+    container_name: clickhouse1
+    hostname: clickhouse1
+    ports:
+      - "8123:8123"
+      - "9000:9000"
+    volumes:
+      - clickhouse1-data:/var/lib/clickhouse
+      - clickhouse1-logs:/var/log/clickhouse-server
+      - ./config/clickhouse1:/etc/clickhouse-server/config.d
+      - ./users:/etc/clickhouse-server/users.d
+    depends_on:
+      - zookeeper1
+      - zookeeper2
+      - zookeeper3
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+    networks:
+      - clickhouse-network
+    restart: always
+
+  clickhouse2:
+    image: registry.cn-hangzhou.aliyuncs.com/macroldj/clickhouse-server:25.4
+    container_name: clickhouse2
+    hostname: clickhouse2
+    ports:
+      - "8124:8123"
+      - "9001:9000"
+    volumes:
+      - clickhouse2-data:/var/lib/clickhouse
+      - clickhouse2-logs:/var/log/clickhouse-server
+      - ./config/clickhouse2:/etc/clickhouse-server/config.d
+      - ./users:/etc/clickhouse-server/users.d
+    depends_on:
+      - zookeeper1
+      - zookeeper2
+      - zookeeper3
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+    networks:
+      - clickhouse-network
+    restart: always
+
+  clickhouse3:
+    image: registry.cn-hangzhou.aliyuncs.com/macroldj/clickhouse-server:25.4
+    container_name: clickhouse3
+    hostname: clickhouse3
+    ports:
+      - "8125:8123"
+      - "9002:9000"
+    volumes:
+      - clickhouse3-data:/var/lib/clickhouse
+      - clickhouse3-logs:/var/log/clickhouse-server
+      - ./config/clickhouse3:/etc/clickhouse-server/config.d
+      - ./users:/etc/clickhouse-server/users.d
+    depends_on:
+      - zookeeper1
+      - zookeeper2
+      - zookeeper3
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+    networks:
+      - clickhouse-network
+    restart: always
+
+networks:
+  clickhouse-network:
+    driver: bridge
+
+volumes:
+  zookeeper1-data:
+  zookeeper1-datalog:
+  zookeeper2-data:
+  zookeeper2-datalog:
+  zookeeper3-data:
+  zookeeper3-datalog:
+  clickhouse1-data:
+  clickhouse1-logs:
+  clickhouse2-data:
+  clickhouse2-logs:
+  clickhouse3-data:
+  clickhouse3-logs:
