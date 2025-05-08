@@ -1,0 +1,26 @@
+FROM registry.cn-hangzhou.aliyuncs.com/macroldj/ubuntu:22.04-base
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        ca-certificates  \
+        netbase \
+        && rm -rf /var/lib/apt/lists/ \
+        && apt-get autoremove -y && apt-get autoclean -y
+
+# install sec tools
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        nmap \
+        net-tools \
+        tcpdump \
+        iputils-ping \
+        dnsutils \
+        curl \
+        wget \
+        vim \
+        git \
+        python3-pip \
+        python3-dev \
+        libssl-dev \
+        libffi-dev \
+        build-essential \
+        && rm -rf /var/lib/apt/lists/ \
+        && apt-get autoremove -y && apt-get autoclean -y
