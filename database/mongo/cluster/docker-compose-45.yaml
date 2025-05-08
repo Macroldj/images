@@ -1,0 +1,87 @@
+version: '3.8'
+services:
+  mongo1:
+    image: registry.cn-hangzhou.aliyuncs.com/macroldj/mongodb-community-server:8.0.3-ubuntu2204
+    container_name: mongo1
+    ports:
+      - "27017:27017"
+    environment:
+      MONGODB_INITDB_ROOT_USERNAME: admin
+      MONGODB_INITDB_ROOT_PASSWORD: admin123
+    volumes:
+      - mongo1-data:/data/db
+    networks:
+      - mongonet
+    restart: always
+    entrypoint: >
+      bash -c "
+        mongod --replSet rs0 --bind_ip_all
+      "
+
+  mongo2:
+    image: registry.cn-hangzhou.aliyuncs.com/macroldj/mongodb-community-server:8.0.3-ubuntu2204
+    container_name: mongo2
+    ports:
+      - "27018:27017"
+    environment:
+      MONGODB_INITDB_ROOT_USERNAME: admin
+      MONGODB_INITDB_ROOT_PASSWORD: admin123
+    entrypoint: >
+      bash -c "
+        mongod --replSet rs0 --bind_ip_all
+      "
+    volumes:
+      - mongo2-data:/data/db
+    networks:
+      - mongonet
+    restart: always
+
+  mongo3:
+    image: registry.cn-hangzhou.aliyuncs.com/macroldj/mongodb-community-server:8.0.3-ubuntu2204
+    container_name: mongo3
+    ports:
+      - "27019:27017"
+    environment:
+      MONGODB_INITDB_ROOT_USERNAME: admin
+      MONGODB_INITDB_ROOT_PASSWORD: admin123
+    entrypoint: >
+      bash -c "
+        mongod --replSet rs0 --bind_ip_all
+      "
+    volumes:
+      - mongo3-data:/data/db
+    networks:
+      - mongonet
+    restart: always
+
+  mongo-init:
+    image: registry.cn-hangzhou.aliyuncs.com/macroldj/mongodb-community-server:8.0.3-ubuntu2204
+    depends_on:
+      - mongo1
+      - mongo2
+      - mongo3
+    entrypoint: >
+      bash -c "
+        sleep 10 &&
+        mongosh --host mongo1:27017 -u admin -p admin123 --authenticationDatabase admin --eval '
+          rs.initiate({
+            _id: \"rs0\",
+            members: [
+              { _id: 0, host: \"100.64.17.45:27017\" },
+              { _id: 1, host: \"100.64.17.45:27018\" },
+              { _id: 2, host: \"100.64.17.45:27019\" }
+            ]
+          })
+        '
+      "
+    networks:
+      - mongonet
+
+networks:
+  mongonet:
+    driver: bridge
+
+volumes:
+  mongo1-data:
+  mongo2-data:
+  mongo3-data:
