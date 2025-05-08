@@ -1,0 +1,65 @@
+version: '3.8'
+services:
+  mysql-master:
+    image: registry.cn-hangzhou.aliyuncs.com/macroldj/mysql:8.4.5
+    container_name: mysql-master
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: appdb
+    volumes:
+      - master-data:/var/lib/mysql
+      - ./master/my.cnf:/etc/mysql/my.cnf
+    networks:
+      - mysql-network
+    restart: always
+
+  mysql-slave1:
+    image: registry.cn-hangzhou.aliyuncs.com/macroldj/mysql:8.4.5
+    container_name: mysql-slave1
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: appdb
+    volumes:
+      - slave1-data:/var/lib/mysql
+      - ./slave/my.cnf:/etc/mysql/my.cnf
+    networks:
+      - mysql-network
+    restart: always
+
+  mysql-slave2:
+    image: registry.cn-hangzhou.aliyuncs.com/macroldj/mysql:8.4.5
+    container_name: mysql-slave2
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: appdb
+    volumes:
+      - slave2-data:/var/lib/mysql
+      - ./slave/my.cnf:/etc/mysql/my.cnf
+    networks:
+      - mysql-network
+    restart: always
+
+  proxysql:
+    image: registry.cn-hangzhou.aliyuncs.com/macroldj/proxysql:2.7.3
+    container_name: proxysql
+    ports:
+      - "6033:6033" # MySQL客户端连接端口
+      - "6032:6032" # ProxySQL管理端口
+    volumes:
+      - ./proxysql.cnf:/etc/proxysql.cnf
+    networks:
+      - mysql-network
+    depends_on:
+      - mysql-master
+      - mysql-slave1
+      - mysql-slave2
+    restart: always
+
+networks:
+  mysql-network:
+    driver: bridge
+
+volumes:
+  master-data:
+  slave1-data:
+  slave2-data:

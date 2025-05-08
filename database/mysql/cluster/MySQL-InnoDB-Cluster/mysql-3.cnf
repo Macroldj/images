@@ -1,0 +1,17 @@
+[mysqld]
+server-id=1
+binlog_checksum=NONE
+enforce_gtid_consistency=ON
+gtid_mode=ON
+binlog-format=ROW
+log-bin=mysql-bin
+log-slave-updates=ON
+master-info-repository=TABLE
+relay-log-info-repository=TABLE
+transaction-write-set-extraction=XXHASH64
+loose-group-replication-group-name="aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
+loose-group-replication-start-on-boot=OFF
+loose-group-replication-local-address="mysql-2:33061"
+loose-group-replication-group-seeds="mysql-1:33061,mysql-2:33061,mysql-3:33061"
+loose-group-replication-single-primary-mode=ON
+loose-group-replication-enforce-update-everywhere-checks=OFF

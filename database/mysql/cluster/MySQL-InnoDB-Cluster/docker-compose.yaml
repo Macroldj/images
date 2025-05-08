@@ -1,0 +1,55 @@
+version: '3.8'
+services:
+  mysql-1:
+    image: registry.cn-hangzhou.aliyuncs.com/macroldj/mysql:5.7.42
+    container_name: mysql-1
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_ROOT_HOST: '%'
+    ports:
+      - "3301:3306"
+    volumes:
+      - mysql1-data:/var/lib/mysql
+      - ./mysql-1.cnf:/etc/my.cnf
+    networks:
+      - mysql-network
+    restart: always
+
+  mysql-2:
+    image: registry.cn-hangzhou.aliyuncs.com/macroldj/mysql:5.7.42
+    container_name: mysql-2
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_ROOT_HOST: '%'
+    ports:
+      - "3302:3306"
+    volumes:
+      - mysql2-data:/var/lib/mysql
+      - ./mysql-2.cnf:/etc/my.cnf
+    networks:
+      - mysql-network
+    restart: always
+
+  mysql-3:
+    image: registry.cn-hangzhou.aliyuncs.com/macroldj/mysql:5.7.42
+    container_name: mysql-3
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_ROOT_HOST: '%'
+    ports:
+      - "3303:3306"
+    volumes:
+      - mysql3-data:/var/lib/mysql
+      - ./mysql-3.cnf:/etc/my.cnf
+    networks:
+      - mysql-network
+    restart: always
+
+networks:
+  mysql-network:
+    driver: bridge
+
+volumes:
+  mysql1-data:
+  mysql2-data:
+  mysql3-data:
