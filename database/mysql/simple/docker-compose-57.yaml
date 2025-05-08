@@ -1,0 +1,19 @@
+version: '3'
+
+services:
+  mysql:
+    image: registry.cn-hangzhou.aliyuncs.com/macroldj/mysql:5.7.42
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: appdb
+      MYSQL_USER: appuser
+      MYSQL_PASSWORD: appuser123
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    restart: always
+
+volumes:
+  mysql-data:
