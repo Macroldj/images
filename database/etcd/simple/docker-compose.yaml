@@ -1,0 +1,24 @@
+version: '3.8'
+services:
+  etcd:
+    image: registry.cn-hangzhou.aliyuncs.com/macroldj/etcd:v3.5.13
+    container_name: etcd
+    environment:
+      NODE1: ${NODE1:-0.0.0.0}
+    ports:
+      - "2379:2379"
+      - "2380:2380"
+    volumes:
+      - etcd-data:/etcd-data
+    restart: always
+    command:
+      - /usr/local/bin/etcd
+      - --data-dir=/etcd-data
+      - --name=node1
+      - --initial-advertise-peer-urls=http://${NODE1:-0.0.0.0}:2380
+      - --listen-peer-urls=http://0.0.0.0:2380
+      - --advertise-client-urls=http://${NODE1:-0.0.0.0}:2379
+      - --listen-client-urls=http://0.0.0.0:2379
+      - --initial-cluster=node1=http://${NODE1:-0.0.0.0}:2380
+volumes:
+  etcd-data:

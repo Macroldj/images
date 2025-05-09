@@ -1,0 +1,94 @@
+version: '3.8'
+services:
+  etcd1:
+    image: registry.cn-hangzhou.aliyuncs.com/macroldj/etcd:v3.5.13
+    container_name: etcd1
+    hostname: etcd1
+    environment:
+      - NODE1=etcd1
+      - NODE2=etcd2
+      - NODE3=etcd3
+    ports:
+      - "2379:2379"
+      - "2380:2380"
+    volumes:
+      - etcd1-data:/etcd-data
+    networks:
+      - etcd-network
+    restart: always
+    command:
+      - /usr/local/bin/etcd
+      - --data-dir=/etcd-data
+      - --name=etcd1
+      - --initial-advertise-peer-urls=http://etcd1:2380
+      - --listen-peer-urls=http://0.0.0.0:2380
+      - --advertise-client-urls=http://etcd1:2379
+      - --listen-client-urls=http://0.0.0.0:2379
+      - --initial-cluster=etcd1=http://etcd1:2380,etcd2=http://etcd2:2380,etcd3=http://etcd3:2380
+      - --initial-cluster-state=new
+      - --initial-cluster-token=etcd-cluster
+
+  etcd2:
+    image: registry.cn-hangzhou.aliyuncs.com/macroldj/etcd:v3.5.13
+    container_name: etcd2
+    hostname: etcd2
+    environment:
+      - NODE1=etcd1
+      - NODE2=etcd2
+      - NODE3=etcd3
+    ports:
+      - "12379:2379"
+      - "12380:2380"
+    volumes:
+      - etcd2-data:/etcd-data
+    networks:
+      - etcd-network
+    restart: always
+    command:
+      - /usr/local/bin/etcd
+      - --data-dir=/etcd-data
+      - --name=etcd2
+      - --initial-advertise-peer-urls=http://etcd2:2380
+      - --listen-peer-urls=http://0.0.0.0:2380
+      - --advertise-client-urls=http://etcd2:2379
+      - --listen-client-urls=http://0.0.0.0:2379
+      - --initial-cluster=etcd1=http://etcd1:2380,etcd2=http://etcd2:2380,etcd3=http://etcd3:2380
+      - --initial-cluster-state=new
+      - --initial-cluster-token=etcd-cluster
+
+  etcd3:
+    image: registry.cn-hangzhou.aliyuncs.com/macroldj/etcd:v3.5.13
+    container_name: etcd3
+    hostname: etcd3
+    environment:
+      - NODE1=etcd1
+      - NODE2=etcd2
+      - NODE3=etcd3
+    ports:
+      - "22379:2379"
+      - "22380:2380"
+    volumes:
+      - etcd3-data:/etcd-data
+    networks:
+      - etcd-network
+    restart: always
+    command:
+      - /usr/local/bin/etcd
+      - --data-dir=/etcd-data
+      - --name=etcd3
+      - --initial-advertise-peer-urls=http://etcd3:2380
+      - --listen-peer-urls=http://0.0.0.0:2380
+      - --advertise-client-urls=http://etcd3:2379
+      - --listen-client-urls=http://0.0.0.0:2379
+      - --initial-cluster=etcd1=http://etcd1:2380,etcd2=http://etcd2:2380,etcd3=http://etcd3:2380
+      - --initial-cluster-state=new
+      - --initial-cluster-token=etcd-cluster
+
+networks:
+  etcd-network:
+    driver: bridge
+
+volumes:
+  etcd1-data:
+  etcd2-data:
+  etcd3-data:
