@@ -1,0 +1,47 @@
+version: '3.8'
+services:
+  pg-master:
+    image: postgres:14
+    container_name: pg-master
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres123
+      POSTGRES_DB: appdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg-master-data:/var/lib/postgresql/data
+      - ./pg-master/postgresql.conf:/etc/postgresql/postgresql.conf
+      - ./pg-master/pg_hba.conf:/etc/postgresql/pg_hba.conf
+    command: postgres -c 'config_file=/etc/postgresql/postgresql.conf'
+    networks:
+      - pg-network
+    restart: always
+
+  pg-slave:
+    image: postgres:14
+    container_name: pg-slave
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres123
+      POSTGRES_DB: appdb
+    ports:
+      - "5433:5432"
+    volumes:
+      - pg-slave-data:/var/lib/postgresql/data
+      - ./pg-slave/postgresql.conf:/etc/postgresql/postgresql.conf
+      - ./pg-slave/pg_hba.conf:/etc/postgresql/pg_hba.conf
+    command: postgres -c 'config_file=/etc/postgresql/postgresql.conf'
+    networks:
+      - pg-network
+    depends_on:
+      - pg-master
+    restart: always
+
+networks:
+  pg-network:
+    driver: bridge
+
+volumes:
+  pg-master-data:
+  pg-slave-data:

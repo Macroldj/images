@@ -1,0 +1,68 @@
+version: '3.8'
+services:
+  ndb_mgmd:
+    image: registry.cn-hangzhou.aliyuncs.com/macroldj/mysql-cluster:8.0.32
+    container_name: ndb_mgmd
+    command: ndb_mgmd --initial --config-file=/etc/mysql-cluster.cnf
+    volumes:
+      - ./mysql-cluster.cnf:/etc/mysql-cluster.cnf
+      - ndb-mgmd-data:/var/lib/mysql-cluster  # Add this volume mount
+    ports:
+      - "1186:1186"
+    networks:
+      - mysql-network
+    restart: always
+
+  ndbd1:
+    image: registry.cn-hangzhou.aliyuncs.com/macroldj/mysql-cluster:8.0.32
+    container_name: ndbd1
+    command: ndbd
+    depends_on:
+      - ndb_mgmd
+    volumes:
+      - ./mysql-cluster.cnf:/etc/mysql-cluster.cnf
+      - ndbd1-data:/var/lib/mysql-cluster
+    networks:
+      - mysql-network
+    restart: always
+
+  ndbd2:
+    image: registry.cn-hangzhou.aliyuncs.com/macroldj/mysql-cluster:8.0.32
+    container_name: ndbd2
+    command: ndbd
+    depends_on:
+      - ndb_mgmd
+    volumes:
+      - ./mysql-cluster.cnf:/etc/mysql-cluster.cnf
+      - ndbd2-data:/var/lib/mysql-cluster
+    networks:
+      - mysql-network
+    restart: always
+
+  mysqld:
+    image: registry.cn-hangzhou.aliyuncs.com/macroldj/mysql:8.4.5
+    container_name: mysqld
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+    command: mysqld --ndbcluster --ndb-connectstring=ndb_mgmd
+    depends_on:
+      - ndb_mgmd
+      - ndbd1
+      - ndbd2
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysqld-data:/var/lib/mysql
+    networks:
+      - mysql-network
+    restart: always
+
+networks:
+  mysql-network:
+    driver: bridge
+
+volumes:
+  ndb-mgmd-data:  # Add this volume definition
+  ndbd1-data:
+  ndbd2-data:
+  mysqld-data:

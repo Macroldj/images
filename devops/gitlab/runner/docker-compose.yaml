@@ -1,0 +1,59 @@
+networks:
+  robnet:
+    ipam:
+      config:
+      - subnet: 172.19.0.0/16
+services:
+  mysql:
+    container_name: mysql
+    environment:
+    - TZ=Asia/Shanghai
+    - LANG=C.UTF-8
+    - MYSQL_ROOT_PASSWORD=protocol1234
+    image: 192.168.9.37/nds/mysql:latest
+    networks:
+      robnet:
+        ipv4_address: 172.19.0.7
+    ports:
+    - 3306:3306
+    restart: unless-stopped
+    volumes:
+    - ./config/mysql.cnf:/etc/mysql/conf.d/mysql.cnf
+    - ./data/mysql:/var/lib/mysql
+  eureka-server:
+    container_name: eureka-server
+    environment:
+    - JAVA_OPTS=-Xms128m -Xmx512m
+    image: 192.168.9.37/security-cd/eureka-server:${version}
+    network_mode: host
+    restart: unless-stopped
+  protocol-server:
+    container_name: protocol-server
+    environment:
+    - JAVA_OPTS=-Xms128m -Xmx512m
+    image: 192.168.9.37/security-cd/protocol-server:${version}
+    network_mode: host
+    restart: unless-stopped
+    depends_on:
+    - eureka-server
+  file-server:
+    container_name: file-server
+    environment:
+    - JAVA_OPTS=-Xms1024m -Xmx2048m
+    image: 192.168.9.37/security-cd/file-server:${version}
+    network_mode: host
+    restart: unless-stopped
+    volumes:
+    - ./jjprotocol:/srv/ftp/jjprotocol
+    depends_on:
+    - eureka-server
+  gateway-server:
+    container_name: gateway-server
+    environment:
+    - JAVA_OPTS=-Xms128m -Xmx512m
+    image: 192.168.9.37/security-cd/gateway-server:${version}
+    network_mode: host
+    restart: unless-stopped
+    depends_on:
+    - eureka-server
+version: '3'

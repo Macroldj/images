@@ -1,0 +1,50 @@
+version: '3.8'
+services:
+  redis-master:
+    image: registry.cn-hangzhou.aliyuncs.com/macroldj/redis:6.2.18
+    container_name: redis-master
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-master-data:/data
+    command: redis-server --requirepass redismaster123
+    networks:
+      - redis-network
+    restart: always
+
+  redis-slave-1:
+    image: registry.cn-hangzhou.aliyuncs.com/macroldj/redis:6.2.18
+    container_name: redis-slave-1
+    ports:
+      - "6380:6379"
+    volumes:
+      - redis-slave-1-data:/data
+    command: redis-server --slaveof redis-master 6379 --masterauth redismaster123 --requirepass redisslave123
+    networks:
+      - redis-network
+    depends_on:
+      - redis-master
+    restart: always
+
+  redis-slave-2:
+    image: registry.cn-hangzhou.aliyuncs.com/macroldj/redis:6.2.18
+    container_name: redis-slave-2
+    ports:
+      - "6381:6379"
+    volumes:
+      - redis-slave-2-data:/data
+    command: redis-server --slaveof redis-master 6379 --masterauth redismaster123 --requirepass redisslave123
+    networks:
+      - redis-network
+    depends_on:
+      - redis-master
+    restart: always
+
+networks:
+  redis-network:
+    driver: bridge
+
+volumes:
+  redis-master-data:
+  redis-slave-1-data:
+  redis-slave-2-data:

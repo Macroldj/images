@@ -1,0 +1,44 @@
+# This file is a template, and might need editing before it works on your project.
+# To contribute improvements to CI/CD templates, please follow the Development guide at:
+# https://docs.gitlab.com/ee/development/cicd/templates.html
+# This specific template is located at:
+# https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Getting-Started.gitlab-ci.yml
+
+# This is a sample GitLab CI/CD configuration file that should run without any modifications.
+# It demonstrates a basic 3 stage CI/CD pipeline. Instead of real tests or scripts,
+# it uses echo commands to simulate the pipeline execution.
+#
+# A pipeline is composed of independent jobs that run scripts, grouped into stages.
+# Stages run in sequential order, but jobs within stages run in parallel.
+#
+# For more information, see: https://docs.gitlab.com/ee/ci/yaml/index.html#stages
+
+stages:
+  - build
+  - deploy
+
+build-job:
+  stage: build
+  tags:
+    - "dev-130"
+  script:
+    - echo "Building the application..."
+    - echo $CI_COMMIT_SHORT_SHA
+    - echo "VERSION=$CI_COMMIT_SHORT_SHA" > .env
+    - docker login -uwangzh01 -pWangzh01 http://192.168.9.37
+    - docker-compose -f deploy/docker-compose.yaml --env-file=.env build
+    - docker-compose -f deploy/docker-compose.yaml --env-file=.env push
+
+deploy-job-cd:
+  stage: deploy
+  tags:
+    - "3209"
+  script:
+    - echo "Deploying application..."
+    - echo $CI_COMMIT_SHORT_SHA
+    # - docker-compose --env-file .env -f docker-compose.yml down
+    # - docker-compose images -q | xargs docker rmi -f
+    - echo "VERSION=$CI_COMMIT_SHORT_SHA" > .env
+    - docker login -uwangzh01 -pWangzh01 http://192.168.9.37
+    - docker-compose -f deploy/docker-compose.yaml --env-file=.env up -d
+  when: manual

@@ -1,0 +1,8 @@
+version: '3'
+
+services:
+  bugly-americanwest-app-crash-main:
+    image: hw-jcr.jjworlds.com/security/bugly-americanwest-app-crash-main:d6a71ef3
+    volumes:
+      - ./crash_data:/data/logs/java
+    restart: always

@@ -1,0 +1,62 @@
+version: '3.8'
+services:
+  redis-1:
+    image: redis:6.2
+    container_name: redis-1
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-1-data:/data
+    command: redis-server --requirepass redis123
+    networks:
+      - redis-network
+    restart: always
+
+  redis-2:
+    image: redis:6.2
+    container_name: redis-2
+    ports:
+      - "6380:6379"
+    volumes:
+      - redis-2-data:/data
+    command: redis-server --requirepass redis123
+    networks:
+      - redis-network
+    restart: always
+
+  redis-3:
+    image: redis:6.2
+    container_name: redis-3
+    ports:
+      - "6381:6379"
+    volumes:
+      - redis-3-data:/data
+    command: redis-server --requirepass redis123
+    networks:
+      - redis-network
+    restart: always
+
+  twemproxy:
+    image: ganomede/twemproxy
+    container_name: twemproxy
+    ports:
+      - "22121:22121"
+      - "22122:22122"
+    volumes:
+      - ./nutcracker.yml:/etc/nutcracker/nutcracker.yml
+    networks:
+      - redis-network
+    depends_on:
+      - redis-1
+      - redis-2
+      - redis-3
+    restart: always
+
+networks:
+  redis-network:
+    driver: bridge
+
+volumes:
+  redis-1-data:
+  redis-2-data:
+  redis-3-data:

@@ -1,0 +1,51 @@
+user nginx;
+worker_processes auto;
+
+events {
+    worker_connections 1024;
+}
+
+upstream backend {
+    least_conn;             # 使用最少连接数策略
+    server backend1.example.com max_fails=3 fail_timeout=30s;
+    server backend2.example.com max_fails=3 fail_timeout=30s;
+}
+
+http {
+    include mime.types;
+    default_type application/octet-stream;
+
+    sendfile on;
+    tcp_nopush on;
+    tcp_nodelay on;
+
+    keepalive_timeout 65;
+
+    server {
+        listen 443 ssl;
+        server_name gitlab.example.com;
+
+        ssl_certificate /etc/nginx/ssl/gitlab.example.com.crt;
+        ssl_certificate_key /etc/nginx/ssl/gitlab.example.com.key;
+
+        location / {
+            proxy_pass http://gitlab;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+    }
+
+    server {
+        listen 80;
+
+        location / {
+            proxy_pass http://backend; # 代理到upstream定义的后端服务器群组
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_next_upstream error timeout invalid_header http_500 http_502 http_503 http_504;
+        }
+    }
+}

@@ -1,0 +1,12 @@
+version: "3"
+services:
+  filebrower:
+    image: filebrowser/filebrowser
+    container_name: filebrower
+    ports:
+      - "8080:80"
+    volumes:
+      - /:/srv
+    restart: always
+    networks:
+      - filebrower

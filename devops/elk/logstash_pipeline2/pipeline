@@ -1,0 +1,38 @@
+input {
+    kafka  {
+        bootstrap_servers => "kafka:9092"
+        auto_offset_reset => "latest"
+        group_id => "jjcrash"
+        topics => ["crash-android-result"]
+    }
+}
+
+filter {
+     json {
+        source => "msg"
+        skip_on_invalid_json => false
+    }
+    mutate {
+        add_field => { "@crash" => "%{crash}" }
+        add_field => { "@androidInfo" => "%{androidInfo}" }
+        remove_field => ["msg", "reply"]
+    }
+    json {
+        source => "@crash"
+        remove_field => ["@crash", "crash"]
+    }
+    json {
+        source => "@androidInfo"
+        remove_field => ["@androidInfo", "androidInfo"]
+    }
+    date {
+        match => ["crashTime", "UNIX_MS" ]
+    }
+}
+
+output {
+    elasticsearch {
+        hosts => ["kafka:9092"]
+        index => "jjcrashlytics-android-crash-%{+YYYY.MM.dd}"
+    }
+}

@@ -1,0 +1,16 @@
+version: "3"
+services:
+  web:
+    image: 100.64.10.37/devops/devops-ui:${VERSION}
+    build:
+      context: ./..
+      dockerfile: Dockerfile
+    ports:
+      - "8888:80"
+    volumes:
+      - ./logs/nginx/:/var/log/nginx/
+    healthcheck:
+      test: curl http://localhost:80||exit 1
+      interval: 30s
+      timeout: 5s
+      retries: 6

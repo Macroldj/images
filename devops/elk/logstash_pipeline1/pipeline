@@ -1,0 +1,33 @@
+input {
+    kafka  {
+        bootstrap_servers => "100.64.10.129:9092"
+        auto_offset_reset => "latest"
+        group_id => "jjbugly"
+        topics => ["crash-android-result"]
+    }
+}
+
+filter {
+    grok {
+        match => [
+            "message" ,"%{DATA}\,%{DATA}\,%{DATA}\,%{DATA}\,%{GREEDYDATA:msg}"
+        ]
+    }
+    json {
+        source => "msg"
+        skip_on_invalid_json => false
+    }
+    date {
+        match => [ "timeSlot", "UNIX_MS" ]
+    }
+    mutate {
+        remove_field => ["msg", "message", "event"]
+    }
+}
+
+output {
+    elasticsearch {
+        hosts => ["10.254.100.250:9200"]
+        index => "bugly-mobile-hb-%{+YYYY.MM.dd}"
+        }
+    }

@@ -1,0 +1,50 @@
+version: "3.7"
+
+services:
+  rocketmq-namesrv:
+    image: apache/rocketmq:4.9.7
+    restart: always
+    container_name: rocketmq-namesrv
+    ports:
+      - "9876:9876"
+    volumes:
+      - ./logs/nameserver1:/home/rocketmq/logs/rocketmqlogs
+    command: sh mqnamesrv
+    networks:
+      - rocketmq
+  rocketmq-broker:
+    image: apache/rocketmq:4.9.7
+    restart: always
+    container_name: rocketmq-broker
+    ports:
+      - "10911:10911"
+    volumes:
+      - ./logs/broker:/home/rocketmq/logs/rocketmqlogs
+      - ./conf/broker.conf:/home/rocketmq/rocketmq-4.9.7/conf/broker.conf
+    environment:
+      TZ: Asia/Shanghai
+      NAMESRV_ADDR: "rocketmq-namesrv:9876"
+      JAVA_OPTS: "-Duser.home=/opt"
+      JAVA_OPT_EXT: "-server -Xms128m -Xmx128m -Xmn128m"
+    command: sh mqbroker -c /home/rocketmq/rocketmq-4.9.7/conf/broker.conf autoCreateTopicEnable=true &
+#    command: sh mqbroker autoCreateTopicEnable=true &
+    depends_on:
+      - rocketmq-namesrv
+    networks:
+      - rocketmq
+  rocketmq-console:
+    image: apacherocketmq/rocketmq-console:2.0.0
+    restart: always
+    container_name: rocketmq-console
+    ports:
+      - "8087:8080"
+    environment:
+      JAVA_OPTS: -Drocketmq.namesrv.addr=rocketmq-namesrv:9876 -Dcom.rocketmq.sendMessageWithVIPChannel=false
+    networks:
+      - rocketmq
+    depends_on:
+      - rocketmq-broker
+
+networks:
+  rocketmq:
+    driver: bridge

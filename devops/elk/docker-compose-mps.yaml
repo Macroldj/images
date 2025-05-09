@@ -1,0 +1,7 @@
+version: "3"
+services:
+  logstash-crash:
+    image: logstash:8.3.3
+    network_mode: host
+    volumes:
+      - ./logstash_pipeline3:/usr/share/logstash/pipeline

@@ -1,0 +1,10 @@
+version: "3"
+services:
+  mysql:
+    image: 192.168.9.37/nds/mysql:latest
+    ports:
+      - 3306:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=
+    volumes:
+      - ./data/mysql:/var/lib/mysql

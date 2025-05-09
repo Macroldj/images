@@ -1,0 +1,29 @@
+version: "3"
+services:
+  postgres:
+    image: postgres:alpine
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: xiaoxiao
+      POSTGRES_USER: lidejin
+      POSTGRES_DB: flow
+    ports:
+      - 5432:5432
+    volumes:
+      - ./data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:latest
+    restart: always
+    ports:
+      - 6379:6379
+
+  mysql:
+    image: mysql:5.7.40
+    restart: always
+    ports:
+      - 3306:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=xiaoxiao
+    volumes:
+      - ./data/mysql:/var/lib/mysql

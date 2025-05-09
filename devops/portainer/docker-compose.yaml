@@ -1,0 +1,8 @@
+version: "3"
+services:
+  portainer:
+    image: 100.64.10.37/devops/portainer:latest
+    volumes:
+    - "/var/run/docker.sock:/var/run/docker.sock"
+    restart: always
+    network_mode: host

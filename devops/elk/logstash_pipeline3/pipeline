@@ -1,0 +1,27 @@
+input {
+    kafka  {
+        bootstrap_servers => "10.254.3.17:9092,10.254.3.18:9092,10.254.3.19:9092"
+        auto_offset_reset => "latest"
+        group_id => "jjmps"
+        topics => ["MX1001_rdwBaseLog_aetsecv2_chengd"]
+    }
+}
+
+filter {
+    json {
+        source => "message"
+        skip_on_invalid_json => false
+    }
+    date {
+        match => [ "ts", "UNIX" ]
+    }
+    mutate {
+        remove_field => ["message"]
+    }
+}
+output {
+    elasticsearch {
+        hosts => ["10.254.100.250:9200"]
+        index => "mps-rdwbaselog_aetsecv2_chengd-%{+YYYY.MM.dd}"
+    }
+}

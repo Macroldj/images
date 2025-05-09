@@ -1,0 +1,70 @@
+version: "3"
+services:
+  es:
+    image: 100.64.10.37/devops/elasticsearch:7.14.0
+    network_mode: host
+    environment:
+      - "ES_JAVA_OPTS=-Xms1g -Xmx2g"
+      - discovery.type=single-node
+      - TAKE_FILE_OWNERSHIP=true
+    volumes:
+      - ./data/es:/usr/share/elasticsearch/data
+      - ./logs/es:/usr/share/elasticsearch/logs
+    privileged: true
+
+  mysql:
+    container_name: mysql-server
+    image: 100.64.10.37/devops/mysql:5.7
+    network_mode: host
+    volumes:
+      - ./data/mysql:/var/lib/mysql:rw
+      - ./logs/mysql:/var/lib/mysql-logs:rw
+    environment:
+      MYSQL_ROOT_PASSWORD: "root@0808"
+    restart: always
+
+  redis:
+    image: 100.64.10.37/devops/redis:6.2.6
+    network_mode: host
+    volumes:
+      - ./data/redis:/var/redis/data:rw
+      - ./logs/redis:/var/log/:rw
+    restart: always
+
+  nacos:
+    image: 100.64.10.37/devops/nacos-server:2.0.1
+    restart: always
+    network_mode: host
+    environment:
+      - MODE=standalone
+    volumes:
+      - ./data/nacos:/home/nacos/data
+      - ./log/nacos:/home/nacos/logs
+
+  zookeeper:
+    image: 100.64.10.37/devops/zookeeper:3.8
+    network_mode: host
+    volumes:
+      - "./data/zookeeper:/bitnami"
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+
+  kafka:
+    image: 100.64.10.37/devops/kafka:3.2
+    network_mode: host
+    volumes:
+      - "./data/kafka:/bitnami"
+    environment:
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=100.64.10.129:2181
+      - ALLOW_PLAINTEXT_LISTENER=yes
+
+  kibana:
+    container_name: kibana
+    hostname: kibana
+    network_mode: host
+    image: 100.64.10.37/devops/kibana:7.14.0
+    restart: always
+    volumes:
+      - ./config/kibana.yml:/usr/share/kibana/config/kibana.yml
+    environment:
+      - elasticsearch.hosts=http://100.64.10.129:9200

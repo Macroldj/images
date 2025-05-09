@@ -1,0 +1,45 @@
+version: "3"
+services:
+  openresty:
+    container_name: openresty
+    environment:
+      - NACOS_SERVER_ADDR=127.0.0.1:8848
+    image: 100.64.10.37/llcb/castle-openresty:ccs-20240111
+    network_mode: host
+    restart: always
+    volumes:
+      - ./config/nacos.conf:/usr/local/openresty/nginx/conf/nacos.conf
+
+  rabbitmq:
+    image: 100.64.10.37/devops/rabbitmq:management
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=castle
+      - RABBITMQ_DEFAULT_VHOST=/
+    network_mode: host
+    restart: always
+
+  mysql:
+    image: 192.168.9.37/sc-psc/castle/castle-mysql:v1.12.1
+    restart: always
+    network_mode: host
+
+  redis:
+    image: 100.64.10.37/devops/redis:7.0.5
+    restart: always
+    network_mode: host
+    volumes:
+      - ./data/redis/:/data:rw
+
+  nacos:
+    image: 100.64.10.37/devops/nacos-server:v2.2.0
+    restart: always
+    network_mode: host
+    environment:
+      - MODE=standalone
+      - SPRING_DATASOURCE_PLATFORM=mysql
+      - MYSQL_SERVICE_HOST=127.0.0.1
+      - MYSQL_SERVICE_PORT=3306
+      - MYSQL_SERVICE_USER=root
+      - MYSQL_SERVICE_PASSWORD=castle
+      - MYSQL_SERVICE_DB_NAME=nacos_config
