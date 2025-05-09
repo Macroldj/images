@@ -1,0 +1,66 @@
+version: '3.8'
+
+services:
+  node1:
+    image: registry.cn-hangzhou.aliyuncs.com/macroldj/ubuntu:22.04-base-net-v1
+    container_name: node1
+    hostname: node1
+    networks:
+      custom-network:
+        ipv4_address: 172.80.0.2
+    command: tail -f /dev/null
+    tty: true
+    stdin_open: true
+    dns:
+      - 172.80.0.5
+
+  node2:
+    image: registry.cn-hangzhou.aliyuncs.com/macroldj/ubuntu:22.04-base-net-v1
+    container_name: node2
+    hostname: node2
+    networks:
+      custom-network:
+        ipv4_address: 172.80.0.3
+    command: tail -f /dev/null
+    tty: true
+    stdin_open: true
+    dns:
+      - 172.80.0.5
+
+  node3:
+    image: registry.cn-hangzhou.aliyuncs.com/macroldj/ubuntu:22.04-base-net-v1
+    container_name: node3
+    hostname: node3
+    networks:
+      custom-network:
+        ipv4_address: 172.80.0.4
+    command: tail -f /dev/null
+    tty: true
+    stdin_open: true
+    dns:
+      - 172.80.0.5
+
+  dns-server:
+    image: registry.cn-hangzhou.aliyuncs.com/macroldj/dnsmasq:2.91
+    container_name: dns-server
+    hostname: dns-server
+    networks:
+      custom-network:
+        ipv4_address: 172.80.0.5
+    environment:
+      - HTTP_USER=admin
+      - HTTP_PASS=admin
+    volumes:
+      - ./dnsmasq.conf:/etc/dnsmasq.conf
+    cap_add:
+      - NET_ADMIN
+    restart: always
+
+networks:
+  custom-network:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.80.0.0/16
+          gateway: 172.80.0.1
