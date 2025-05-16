@@ -244,4 +244,5 @@ server {
 - 使用 ELK 或 Graylog 进行日志集中管理
 - 考虑使用 Kubernetes 部署以获得更好的扩展性和自愈能力
 
-        当前模型请求量过大，请求排队约 3 位，请稍候或切换至其他模型问答体验更流畅。
+## Reference
+- [kubernetes-operator](https://github.com/jenkinsci/kubernetes-operator#)
