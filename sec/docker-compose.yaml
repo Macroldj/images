@@ -1,0 +1,15 @@
+version: "3"
+services:
+  sec-tools:
+    image: registry.cn-hangzhou.aliyuncs.com/macroldj/ubuntu:22.04-sec
+    container_name: sec-tools
+    hostname: sec-tools
+    restart: always
+    environment:
+      - TZ=Asia/Shanghai
+    volumes:
+      - ./script:/script
+    command:
+      - /bin/bash
+      - -c
+      - "while true; do sleep 30; done;"
