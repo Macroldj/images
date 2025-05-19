@@ -1,0 +1,160 @@
+version: '3.8'
+
+services:
+  jenkins-master:
+    build: ./jenkins-master
+    container_name: jenkins-master
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    volumes:
+      - jenkins-master-data:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - JENKINS_OPTS="--prefix=/jenkins"
+      - JAVA_OPTS="-Xmx2g -Xms1g -XX:+UseG1GC -Djava.awt.headless=true -Djenkins.install.runSetupWizard=false"
+      - JENKINS_ADMIN_ID=${JENKINS_ADMIN_ID:-admin}
+      - JENKINS_ADMIN_PASSWORD=${JENKINS_ADMIN_PASSWORD:-admin}
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 1G
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/jenkins/login"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    networks:
+      - jenkins-network
+
+  jenkins-agent1:
+    build: ./jenkins-agent
+    container_name: jenkins-agent1
+    restart: unless-stopped
+    environment:
+      - JENKINS_URL=http://jenkins-master:8080/jenkins
+      - JENKINS_AGENT_NAME=agent1
+      - JENKINS_SECRET=${JENKINS_AGENT1_SECRET:-agent-secret-key}
+      - JENKINS_AGENT_WORKDIR=/var/jenkins_agent
+    volumes:
+      - jenkins-agent1-data:/var/jenkins_agent
+      - /var/run/docker.sock:/var/run/docker.sock
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+        reservations:
+          cpus: '0.25'
+          memory: 512M
+    depends_on:
+      jenkins-master:
+        condition: service_healthy
+    networks:
+      - jenkins-network
+
+  jenkins-agent2:
+    build: ./jenkins-agent
+    container_name: jenkins-agent2
+    restart: unless-stopped
+    environment:
+      - JENKINS_URL=http://jenkins-master:8080/jenkins
+      - JENKINS_AGENT_NAME=agent2
+      - JENKINS_SECRET=${JENKINS_AGENT2_SECRET:-agent-secret-key}
+      - JENKINS_AGENT_WORKDIR=/var/jenkins_agent
+    volumes:
+      - jenkins-agent2-data:/var/jenkins_agent
+      - /var/run/docker.sock:/var/run/docker.sock
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+        reservations:
+          cpus: '0.25'
+          memory: 512M
+    depends_on:
+      jenkins-master:
+        condition: service_healthy
+    networks:
+      - jenkins-network
+
+  nginx:
+    image: nginx:1.25-alpine
+    container_name: jenkins-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./nginx/ssl:/etc/nginx/ssl
+      - ./nginx/logs:/var/log/nginx
+    healthcheck:
+      test: ["CMD", "nginx", "-t"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    depends_on:
+      jenkins-master:
+        condition: service_healthy
+    networks:
+      - jenkins-network
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: jenkins-prometheus
+    restart: unless-stopped
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    ports:
+      - "9090:9090"
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    networks:
+      - jenkins-network
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: jenkins-grafana
+    restart: unless-stopped
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin}
+      - GF_USERS_ALLOW_SIGN_UP=false
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+    networks:
+      - jenkins-network
+
+volumes:
+  jenkins-master-data:
+    driver: local
+  jenkins-agent1-data:
+    driver: local
+  jenkins-agent2-data:
+    driver: local
+  prometheus-data:
+    driver: local
+  grafana-data:
+    driver: local
+
+networks:
+  jenkins-network:
+    driver: bridge
