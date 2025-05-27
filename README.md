@@ -59,3 +59,15 @@ docker-compose up -d
 ## 贡献指南
 
 欢迎提交 Pull Request 或 Issue 来完善这个仓库。
+
+## Reference
+- [Docker 官方文档](https://docs.docker.com/)
+- [Docker Compose 官方文档](https://docs.docker.com/compose/)
+- [Docker Hub](https://hub.docker.com/)
+- [阿里云容器镜像服务](https://cr.console.aliyun.com/)
+- [Docker Compose 文件参考](https://docs.docker.com/compose/compose-file/)
+- [Dockerfile 参考](https://docs.docker.com/engine/reference/builder/)
+- [Docker Compose 命令参考](https://docs.docker.com/compose/reference/)
+- [Docker 命令参考](https://docs.docker.com/engine/reference/commandline/docker/)
+- [Docker Compose 示例](https://docs.docker.com/compose/gettingstarted/)
+- [dockerfiles](https://github.com/tianon/dockerfiles.git)

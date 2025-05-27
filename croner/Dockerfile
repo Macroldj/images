@@ -1,11 +1,13 @@
 # 使用基础镜像
-FROM ubuntu:20.04
+FROM registry.cn-hangzhou.aliyuncs.com/macroldj/ubuntu:22.04-base
 
 # 避免在安装过程中出现交互式提示
 ENV DEBIAN_FRONTEND=noninteractive
 
 # 更新软件包列表并安装 cron
-RUN apt-get update && apt-get install -y cron
+RUN apt-get update && apt-get install -y cron mysql postgresql-client
+# 清理软件包列表
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # 创建日志文件目录
 RUN mkdir -p /var/log/cron
